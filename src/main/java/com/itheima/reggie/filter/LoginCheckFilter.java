@@ -6,6 +6,8 @@ Check whether the user has logged in
 
 import com.alibaba.fastjson.JSON;
 import com.itheima.reggie.common.R;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
 
@@ -14,6 +16,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebFilter(filterName = "loginCheckFilter",urlPatterns = "/*")
 @Slf4j
