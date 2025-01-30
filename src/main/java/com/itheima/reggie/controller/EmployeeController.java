@@ -1,16 +1,16 @@
 package com.itheima.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.itheima.reggie.common.R;
 import com.itheima.reggie.entity.Employee;
 import com.itheima.reggie.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -89,5 +89,32 @@ public class EmployeeController {
         employeeService.save(employee);
 
         return R.success("新增员工成功");
+    }
+
+    /**
+     * Search employee info by pages
+     * @param pageNum
+     * @param pageSize
+     * @param username
+     * @return
+     */
+    @GetMapping("/page")
+    public R<Page> page(int page, int pageSize, String name){
+//        log.info("pageNum:{},pageSize:{},username:{}", page, pageSize, name);
+        //construct page object
+        Page pageInfo = new Page(page, pageSize);
+
+        //where name like
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper<>();
+        if(!StringUtils.isEmpty(name)) {
+            queryWrapper.like(Employee::getUsername, name);
+        }
+
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        //不需要接收这个Ipage因为page方法会把records和total赋值给pageInfo
+        //conduct the search
+        employeeService.page(pageInfo, queryWrapper);
+        return R.success(pageInfo);
     }
 }
